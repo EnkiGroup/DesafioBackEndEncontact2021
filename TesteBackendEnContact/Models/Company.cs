@@ -1,6 +1,6 @@
-﻿using TesteBackendEnContact.Core.Interface.ContactBook.Company;
+﻿using TesteBackendEnContact.Models.Interface;
 
-namespace TesteBackendEnContact.Core.Domain.ContactBook.Company
+namespace TesteBackendEnContact.Models
 {
     public class Company : ICompany
     {

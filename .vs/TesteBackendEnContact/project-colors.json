@@ -1,0 +1,26 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "922879c7-8978-460b-b44a-a71d7b6ab525": {
+      "ProjectGuid": "922879c7-8978-460b-b44a-a71d7b6ab525",
+      "DisplayName": "TesteBackendEnContact",
+      "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Arquivos Diversos",
+      "ColorIndex": -1
+    },
+    "4607cefc-e89d-4ec1-b471-1f9bef039e9e": {
+      "ProjectGuid": "4607cefc-e89d-4ec1-b471-1f9bef039e9e",
+      "DisplayName": "ContactAPI",
+      "ColorIndex": 1
+    },
+    "29948a27-5c00-47a7-99ac-30bd7f7be319": {
+      "ProjectGuid": "29948a27-5c00-47a7-99ac-30bd7f7be319",
+      "DisplayName": "ContactsUpload",
+      "ColorIndex": 2
+    }
+  },
+  "NextColorIndex": 3
+}

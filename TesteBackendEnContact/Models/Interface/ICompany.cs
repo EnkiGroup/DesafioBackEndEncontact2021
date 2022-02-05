@@ -1,4 +1,4 @@
-﻿namespace TesteBackendEnContact.Core.Interface.ContactBook.Company
+﻿namespace TesteBackendEnContact.Models.Interface
 {
     public interface ICompany
     {

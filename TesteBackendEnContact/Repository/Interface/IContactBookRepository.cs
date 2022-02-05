@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using TesteBackendEnContact.Core.Interface.ContactBook;
+using TesteBackendEnContact.Models.Interface;
 
 namespace TesteBackendEnContact.Repository.Interface
 {
@@ -10,5 +10,11 @@ namespace TesteBackendEnContact.Repository.Interface
         Task DeleteAsync(int id);
         Task<IEnumerable<IContactBook>> GetAllAsync();
         Task<IContactBook> GetAsync(int id);
+
+        bool IsInDatabase(int id);
+
+        Task<int> GetId(string contactBookName);
+
+
     }
 }

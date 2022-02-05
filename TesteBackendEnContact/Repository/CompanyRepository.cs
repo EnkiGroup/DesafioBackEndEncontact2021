@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TesteBackendEnContact.Core.Domain.ContactBook.Company;
-using TesteBackendEnContact.Core.Interface.ContactBook.Company;
 using TesteBackendEnContact.Database;
+using TesteBackendEnContact.Models;
+using TesteBackendEnContact.Models.Interface;
 using TesteBackendEnContact.Repository.Interface;
 
 namespace TesteBackendEnContact.Repository
@@ -37,6 +37,9 @@ namespace TesteBackendEnContact.Repository
         public async Task DeleteAsync(int id)
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
+
+            connection.Open();
+
             using var transaction = connection.BeginTransaction();
 
             var sql = new StringBuilder();
@@ -44,6 +47,10 @@ namespace TesteBackendEnContact.Repository
             sql.AppendLine("UPDATE Contact SET CompanyId = null WHERE CompanyId = @id;");
 
             await connection.ExecuteAsync(sql.ToString(), new { id }, transaction);
+
+            transaction.Commit();
+
+            connection.Close();
         }
 
         public async Task<IEnumerable<ICompany>> GetAllAsync()
@@ -60,11 +67,32 @@ namespace TesteBackendEnContact.Repository
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
 
-            var query = "SELECT * FROM Conpany where Id = @id";
+            var query = "SELECT * FROM Company where Id = @id";
             var result = await connection.QuerySingleOrDefaultAsync<CompanyDao>(query, new { id });
 
-            return result?.Export();
+            return result?.Export();                                                                                                            
         }
+        public async Task<int> GetContactBookId(string searchTerm) {
+
+            using var connection = new SqliteConnection(databaseConfig.ConnectionString);
+
+            var query = "SELECT ContactBookId FROM Company where Name = @searchTerm";
+
+            int result= await connection.QuerySingleOrDefaultAsync<int>(query, new { searchTerm });
+
+            return result;
+        }
+        public async Task<int> GetId(int contactBookId)
+        {
+            using var connection = new SqliteConnection(databaseConfig.ConnectionString);
+
+            var query = "SELECT Id FROM Company where ContactBookId = @contactBookId";
+
+            var result = await connection.QuerySingleOrDefaultAsync<int>(query, new { contactBookId });
+
+            return result;
+        }
+
     }
 
     [Table("Company")]

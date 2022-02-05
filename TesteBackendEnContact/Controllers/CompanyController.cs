@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TesteBackendEnContact.Controllers.Models;
-using TesteBackendEnContact.Core.Interface.ContactBook.Company;
+using TesteBackendEnContact.DAO;
+using TesteBackendEnContact.Models.Interface;
 using TesteBackendEnContact.Repository.Interface;
 
 namespace TesteBackendEnContact.Controllers
@@ -20,7 +20,7 @@ namespace TesteBackendEnContact.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ICompany>> Post(SaveCompanyRequest company, [FromServices] ICompanyRepository companyRepository)
+        public async Task<ActionResult<ICompany>> Post(CompanyDao company, [FromServices] ICompanyRepository companyRepository)
         {
             return Ok(await companyRepository.SaveAsync(company.ToCompany()));
         }

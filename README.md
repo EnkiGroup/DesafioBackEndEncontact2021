@@ -12,17 +12,17 @@ Neste teste você poderá mostrar suas habilidades em c# e dotnet, Orientação 
 
 O foco deste teste é a garantia dos requisitos abaixo estejam funcionais na API:
 
-- [ ] Criar, editar, excluir e listar agendas.
-- [ ] Criar, editar, excluir e listar empresas.
-- [ ] Importar contatos a partir de um arquivo .csv
+- [X] Criar, editar, excluir e listar agendas.
+- [X] Criar, editar, excluir e listar empresas.
+- [X] Importar contatos a partir de um arquivo .csv
   - Fique a vontade para definir o leiaute do arquivo .csv
   - Caso dê erro na importação de um registro, não deve impactar a importação dos demais.
   - É obrigatório ter uma agenda vinculada ao contato.
   - No arquivo, se for informada uma empresa ao contato, ela deve existir previamente no sistema. Caso não seja informado, o contato é registrado sem vinculo com a empresa.
-- [ ] Pesquisar contatos
+- [X] Pesquisar contatos
   - Deve pesquisar em qualquer campo do contato (incluído o nome da empresa).
   - A pesquisa deve ser paginada (Fique a vontade para utilizar qualquer estratégia).
-- [ ] Pesquisa de contatos da empresa
+- [X] Pesquisa de contatos da empresa
   - Poder consultar os contatos de uma agenda e que estejam em uma determinada empresa.
 
 ## O repositório
@@ -45,3 +45,21 @@ Tem um tempinho a mais? Acha que pode fazer mais? Então aqui vai alguns desafio
 - Seria uma boa se pontos críticos do código tivessem testes unitários.
 - Adicionar autenticação na API seria interessante.
 - Poder exportar a agenda completa também seria legal.
+
+##
+
+## Alterações 
+
+Alterações feitas: Mudança de código na string de consulta método GetAll de Conpany para Company que causava erro na consulta no banco de dados;
+Inserção de código no médoto Delete que estava faltando no para o funcionamento esperado do mesmo;
+Inserção de entidade Contact;
+Alteração do método construtor em ContactBookDao;
+Implementação de upload de arquivo para importação de contatos;
+Refatoração de pastas do projeto;
+Implementação de pesquisa paginada e pesquisa de contatos por agenda pelo nome;
+Refatoração de trechos de códigos semelhantes.
+
+
+
+
+ 

@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using TesteBackendEnContact.Core.Domain.ContactBook.Company;
-using TesteBackendEnContact.Core.Interface.ContactBook.Company;
+using TesteBackendEnContact.Models;
+using TesteBackendEnContact.Models.Interface;
 
-namespace TesteBackendEnContact.Controllers.Models
+namespace TesteBackendEnContact.DAO
 {
-    public class SaveCompanyRequest
+    public class CompanyDao : ICompany
     {
         public int Id { get; set; }
         [Required]
