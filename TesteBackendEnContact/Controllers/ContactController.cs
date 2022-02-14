@@ -3,8 +3,6 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Controllers.Models.Contact;
-using TesteBackendEnContact.Core.Domain.ContactBook;
-using TesteBackendEnContact.Core.Interface.ContactBook;
 using TesteBackendEnContact.Core.Interface.ContactBook.Contact;
 using TesteBackendEnContact.Repository.Interface;
 using TesteBackendEnContact.Services.Interface;

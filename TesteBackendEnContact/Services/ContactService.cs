@@ -3,11 +3,10 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using TesteBackendEnContact.Core.Domain.Contact;
 using TesteBackendEnContact.Core.Interface.ContactBook.Contact;
 using TesteBackendEnContact.Services.Interface;
-using TesteBackendEnContact.Services.Models;
 
 namespace TesteBackendEnContact.Services
 {
@@ -19,26 +18,26 @@ namespace TesteBackendEnContact.Services
             _configuration = configuration;
         }
 
-        public async Task<bool> UpdateFileContact(HttpRequest httpRequest)
+        public async Task<IEnumerable<IContactModel>> UpdateFileContact(HttpRequest httpRequest)
         {
-            var contact = new List<ContactServiceModel>();
+            var listContact = new List<Models.ContactService>();
             var path = httpRequest.Form.Files[0].FileName;
-
 
             if (path.Contains(".csv"))
             {
-                var c = ReaderCsv(path);
-                foreach (var item in c)
+                var contactModels = ReaderCsv(path);
+                foreach (var contactModel in contactModels)
                 {
-                    contact.Add((ContactServiceModel)item);
+                    listContact.Add((Models.ContactService)contactModel);
                 }
             }
+            else
+                throw new InvalidOperationException("Formato de arquivo não suportado.");
 
-            return true;
-
+            return listContact;
         }
 
-        public IEnumerable<IContact> ReaderCsv(string path)
+        private IEnumerable<IContactModel> ReaderCsv(string path)
         {
             using (var reader = new StreamReader(path))
             {
@@ -50,17 +49,16 @@ namespace TesteBackendEnContact.Services
                 {
                     lineSplit = line.Split(';');
 
-                    var contact = new ContactServiceModel
+                    var contactService = new Models.ContactService
                     {
-                        ContactBookId = int.Parse(lineSplit[0]),
-                        CompanyId = int.Parse(lineSplit[1]),
-                        Name = lineSplit[2],
-                        Phone = lineSplit[3],
-                        Email = lineSplit[4],
-                        Address = lineSplit[5]
+                        Name = lineSplit[0],
+                        Phone = lineSplit[1],
+                        Email = lineSplit[2],
+                        Address = lineSplit[3],
+                        NameCompany = lineSplit[4],
                     };
 
-                    yield return contact.ToContact();
+                    yield return contactService.ToContact();
                 }
             }
         }
@@ -74,7 +72,7 @@ namespace TesteBackendEnContact.Services
             using (var Csv = new StreamWriter(modelCsv, encoding: System.Text.Encoding.UTF8))
             {
                 #region .: Modelo CSV :.
-                Csv.WriteLine("ContactBookId;CompanyId;Name;Phone;Email;Address;");
+                Csv.WriteLine("Name;Phone;Email;Address;NameCompany");
                 #endregion
             }
 
