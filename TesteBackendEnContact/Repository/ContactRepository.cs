@@ -3,38 +3,37 @@ using Dapper.Contrib.Extensions;
 using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using TesteBackendEnContact.Core.Interface.ContactBook.Company;
+using TesteBackendEnContact.Core.Interface.ContactBook.Contact;
 using TesteBackendEnContact.Database;
 using TesteBackendEnContact.Repository.Interface;
 using TesteBackendEnContact.Repository.Models;
 
 namespace TesteBackendEnContact.Repository
 {
-    public class CompanyRepository : ICompanyRepository
+    public class ContactRepository : IContactRepository
     {
         private readonly DatabaseConfig _databaseConfig;
-
-        public CompanyRepository(DatabaseConfig databaseConfig)
+        public ContactRepository(DatabaseConfig databaseConfig)
         {
             _databaseConfig = databaseConfig;
         }
 
-        public async Task<ICompany> EditAsync(ICompany company)
+        public async Task<IContact> EditAsync(IContact contact)
         {
             using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
-            var dao = new CompanyDao(company);
+
+            var dao = new ContactDao(contact);
             await connection.UpdateAsync(dao);
 
             return dao.Export();
         }
 
-        public async Task<ICompany> SaveAsync(ICompany company)
+        public async Task<IContact> SaveAsync(IContact contact)
         {
             using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
 
-            var dao = new CompanyDao(company);
+            var dao = new ContactDao(contact);
             dao.Id = await connection.InsertAsync(dao);
 
             return dao.Export();
@@ -43,34 +42,32 @@ namespace TesteBackendEnContact.Repository
         public async Task DeleteAsync(int id)
         {
             using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
-            connection.Open();
-            using var transaction = connection.BeginTransaction();
 
-            var sql = new StringBuilder();
-            sql.AppendLine("DELETE FROM Company WHERE Id = @id;");
-            sql.AppendLine("UPDATE Contact SET CompanyId = null WHERE CompanyId = @id;");
+            var sql = " DELETE FROM Contact WHERE Id = @id; ";
 
-            await connection.ExecuteAsync(sql.ToString(), new { id }, transaction);
+            await connection.ExecuteAsync(sql.ToString(), new { id });
         }
 
-        public async Task<IEnumerable<ICompany>> GetAllAsync()
+        public async Task<IEnumerable<IContact>> GetAllAsync()
         {
             using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
 
-            var query = "SELECT * FROM Company";
-            var result = await connection.QueryAsync<CompanyDao>(query);
-
-            return result?.Select(item => item.Export());
+            var query = "SELECT * FROM Contact";
+            var result = await connection.QueryAsync<ContactDao>(query);
+            return result.ToList();
+            //return result?.Select(item => item.Export());
         }
 
-        public async Task<ICompany> GetAsync(int id)
+        public async Task<IContact> GetAsync(int id)
         {
             using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
 
-            var query = "SELECT * FROM Company where Id = @id";
-            var result = await connection.QuerySingleOrDefaultAsync<CompanyDao>(query, new { id });
+            var query = "SELECT * FROM Contact where Id = @id ";
+            var result = await connection.QuerySingleOrDefaultAsync<ContactDao>(query, new { id });
 
             return result?.Export();
         }
+
+
     }
 }

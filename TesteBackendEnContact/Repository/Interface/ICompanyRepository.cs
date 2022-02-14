@@ -6,6 +6,7 @@ namespace TesteBackendEnContact.Repository.Interface
 {
     public interface ICompanyRepository
     {
+        Task<ICompany> EditAsync(ICompany company);
         Task<ICompany> SaveAsync(ICompany company);
         Task DeleteAsync(int id);
         Task<IEnumerable<ICompany>> GetAllAsync();

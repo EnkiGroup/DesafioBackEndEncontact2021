@@ -1,6 +1,6 @@
 ﻿using TesteBackendEnContact.Core.Interface.ContactBook.Company;
 
-namespace TesteBackendEnContact.Core.Domain.ContactBook.Company
+namespace TesteBackendEnContact.Core.Domain.Company
 {
     public class Company : ICompany
     {
