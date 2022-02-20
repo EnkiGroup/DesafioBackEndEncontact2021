@@ -1,6 +1,6 @@
-﻿namespace TesteBackendEnContact.Core.Interface.ContactBook.Contact
+﻿namespace TesteBackendEnContact.Core.Interface.Data
 {
-    public interface IContactModel
+    public interface IDataModel
     {
         string Name { get; }
         string Phone { get; }

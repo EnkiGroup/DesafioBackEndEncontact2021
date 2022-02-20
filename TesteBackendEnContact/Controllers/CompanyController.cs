@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TesteBackendEnContact.Controllers.Models;
 using TesteBackendEnContact.Core.Interface.ContactBook.Company;
 using TesteBackendEnContact.Repository.Interface;
+using TesteBackendEnContact.Services.Interface;
 
 namespace TesteBackendEnContact.Controllers
 {
@@ -23,33 +24,32 @@ namespace TesteBackendEnContact.Controllers
         /// Edit Company 
         /// </summary>
         [HttpPut]
-        public async Task<ActionResult<ICompany>> Put(EditCompanyRequest company, [FromServices] ICompanyRepository companyRepository)
+        public async Task<ActionResult<ICompany>> Put(EditCompanyRequest company, [FromServices] ICompanyService companyService)
         {
-            return Ok(await companyRepository.EditAsync(company.ToCompany()));
+            return Ok(await companyService.EditAsync(company.ToCompany()));
         }
 
         /// <summary>Save Company</summary>
-        /// <param name="ContactBookId"></param>
         /// <param name="Name"></param>
         [HttpPost]
-        public async Task<ActionResult<ICompany>> Post(SaveCompanyRequest company, [FromServices] ICompanyRepository companyRepository)
+        public async Task<ActionResult<ICompany>> Post(SaveCompanyRequest company, [FromServices] ICompanyService  companyService)
         {
-            return Ok(await companyRepository.SaveAsync(company.ToCompany()));
+            return Ok(await companyService.SaveAsync(company.ToCompany()));
         }
 
         [HttpDelete]
-        public async Task Delete(int id, [FromServices] ICompanyRepository companyRepository)
+        public async Task Delete(int id, [FromServices] ICompanyService companyService)
         {
-            await companyRepository.DeleteAsync(id);
+            await companyService.DeleteAsync(id);
         }
 
         /// <summary>
         /// Get All Company 
         /// </summary>
         [HttpGet]
-        public async Task<IEnumerable<ICompany>> Get([FromServices] ICompanyRepository companyRepository)
+        public async Task<IEnumerable<ICompany>> Get([FromServices] ICompanyService companyService)
         {
-            return await companyRepository.GetAllAsync();
+            return await companyService.GetAllAsync();
         }
 
         /// <summary>
@@ -57,9 +57,9 @@ namespace TesteBackendEnContact.Controllers
         /// </summary>
         /// <param name="Id"></param>
         [HttpGet("{id}")]
-        public async Task<ICompany> Get(int id, [FromServices] ICompanyRepository companyRepository)
+        public async Task<ICompany> Get(int id, [FromServices] ICompanyService companyService)
         {
-            return await companyRepository.GetAsync(id);
+            return await companyService.GetAsync(id);
         }
     }
 }

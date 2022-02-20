@@ -1,82 +1,103 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Interface.ContactBook.Contact;
+using TesteBackendEnContact.Repository.Interface;
 using TesteBackendEnContact.Services.Interface;
+using TesteBackendEnContact.Services.Models;
 
 namespace TesteBackendEnContact.Services
 {
     public class ContactService : IContactService
     {
-        private readonly IConfiguration _configuration;
-        public ContactService(IConfiguration configuration)
+        private readonly IContactRepository _contactRepository;
+        private readonly ICompanyRepository _companyRepository;
+        private readonly IContactBookRepository _contactBookRepository;
+        public ContactService(IContactRepository contactRepository, ICompanyRepository companyRepository, IContactBookRepository contactBookRepository)
         {
-            _configuration = configuration;
+            _contactRepository = contactRepository;
+            _companyRepository = companyRepository;
+            _contactBookRepository = contactBookRepository;
         }
 
-        public async Task<IEnumerable<IContactModel>> UpdateFileContact(HttpRequest httpRequest)
+        public async Task<IContact> GetAsync(int id)
         {
-            var listContact = new List<Models.ContactService>();
-            var path = httpRequest.Form.Files[0].FileName;
+            return await _contactRepository.GetAsync(id);
+        }
 
-            if (path.Contains(".csv"))
+        public async Task<IEnumerable<IContact>> GetAllAsync()
+        {
+            return await _contactRepository.GetAllAsync();
+        }
+
+        public async Task<IContact> SaveAsync(IContact contact)
+        {
+            var companyId = 0;
+
+            if (contact.CompanyId > 0)
+                companyId = contact.CompanyId;
+
+            var contactBookModel = new ContactBookModel()
             {
-                var contactModels = ReaderCsv(path);
-                foreach (var contactModel in contactModels)
+                Name = contact.Name,
+            };
+            var contactBook = await _contactBookRepository.SaveAsync(contactBookModel);
+
+
+            if (contact.IsCompany)
+            {
+                var companyModel = new CompanyModel()
                 {
-                    listContact.Add((Models.ContactService)contactModel);
-                }
+                    ContactBookId = contactBook.Id,
+                    Name = contact.Name,
+                };
+                var company = await _companyRepository.SaveAsync(companyModel);
+                companyId = company.Id;
             }
-            else
-                throw new InvalidOperationException("Formato de arquivo não suportado.");
 
-            return listContact;
+            var contactModel = new ContactModel()
+            {
+                ContactBookId = contactBook.Id,
+                CompanyId = companyId,
+                Name = contact.Name,
+                Phone = contact.Phone,
+                Email = contact.Email,
+                Address = contact.Address,
+            };
+            return await _contactRepository.SaveAsync(contactModel);
         }
 
-        private IEnumerable<IContactModel> ReaderCsv(string path)
+        public async Task<IContact> EditAsync(IContact contact)
         {
-            using (var reader = new StreamReader(path))
-            {
-                var line = string.Empty;
-                string[] lineSplit = null;
-                var numberLine = 0;
+            var validatorCompany = false;
+            var company = await _companyRepository.GetCompanyByNameAsync(contact.Name);
+            var contactBook = await _contactBookRepository.GetContactBookByName(contact.Name);
 
-                while ((line = reader.ReadLine()) is not null)
+            if (company is not null)
+                 validatorCompany = contactBook.Id == company.ContactBookId ? true : false;
+
+            if (validatorCompany)
+            {
+                var companyModel = new CompanyModel()
                 {
-                    lineSplit = line.Split(';');
-
-                    var contactService = new Models.ContactService
-                    {
-                        Name = lineSplit[0],
-                        Phone = lineSplit[1],
-                        Email = lineSplit[2],
-                        Address = lineSplit[3],
-                        NameCompany = lineSplit[4],
-                    };
-
-                    yield return contactService.ToContact();
-                }
+                    Id = company.Id,
+                    Name = contact.Name,
+                };
+                _ = await _companyRepository.EditAsync(companyModel);
             }
+
+            var contactBookModel = new ContactBookModel()
+            {
+                Id = contactBook.Id,
+                Name = contact.Name
+            };
+            _ = await _contactBookRepository.EditAsync(contactBookModel);
+
+            return await _contactRepository.EditAsync(contact);
         }
 
-        public async Task<string> ModelCsv()
+        public async Task DeleteAsync(int id)
         {
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\ModeloCSV\";
-            var fileName = "Modelo CSV.csv";
-            var modelCsv = new FileStream(path + fileName, FileMode.Create, FileAccess.ReadWrite);
-
-            using (var Csv = new StreamWriter(modelCsv, encoding: System.Text.Encoding.UTF8))
-            {
-                #region .: Modelo CSV :.
-                Csv.WriteLine("Name;Phone;Email;Address;NameCompany");
-                #endregion
-            }
-
-            return path + fileName;
+            await _contactRepository.DeleteAsync(id);
         }
     }
 }

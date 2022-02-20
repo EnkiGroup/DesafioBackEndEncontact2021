@@ -11,8 +11,9 @@ namespace TesteBackendEnContact.Core.Domain.Contact
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
+        public bool IsCompany { get; set; }
 
-        public Contact(int id, int contactBookId, int companyId, string name, string phone, string email, string address)
+        public Contact(int id, int contactBookId, int companyId, string name, string phone, string email, string address, bool isCompany)
         {
             Id = id;
             ContactBookId = contactBookId;
@@ -21,7 +22,8 @@ namespace TesteBackendEnContact.Core.Domain.Contact
             Phone = phone;
             Email = email;
             Address = address;
+            IsCompany = isCompany;
         }
-                    
+
     }
 }

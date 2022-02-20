@@ -3,6 +3,7 @@ using Dapper.Contrib.Extensions;
 using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Domain.ContactBook;
 using TesteBackendEnContact.Core.Interface.ContactBook;
@@ -31,6 +32,7 @@ namespace TesteBackendEnContact.Repository
             return dao.Export();
         }
 
+        #region .: Save ContactBook :.
         public async Task<IContactBook> SaveAsync(IContactBook contactBook)
         {
             using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
@@ -40,6 +42,7 @@ namespace TesteBackendEnContact.Repository
 
             return dao.Export();
         }
+        #endregion
 
         public async Task DeleteAsync(int id)
         {
@@ -68,6 +71,25 @@ namespace TesteBackendEnContact.Repository
 
             var query = "SELECT * FROM ContactBook WHERE Id = @id";
             var result = await connection.QuerySingleOrDefaultAsync<ContactBookDao>(query, new { id });
+
+            return result?.Export();
+        }
+
+        public async Task<int> InsertContactBook(string name)
+        {
+            using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+            var dao = new ContactBookDao();
+            dao.Name = name;
+            dao.Id = await connection.InsertAsync(dao);
+            return dao.Id;
+        }
+
+        public async Task<IContactBook> GetContactBookByName(string name)
+        {
+            using var conn = new SqliteConnection(_databaseConfig.ConnectionString);
+           
+            var query = " SELECT Id, Name FROM ContactBook Where Name = @name ";
+            var result = await conn.QuerySingleOrDefaultAsync<ContactBookDao>(query, new { name });
 
             return result?.Export();
         }

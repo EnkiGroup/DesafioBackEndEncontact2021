@@ -6,6 +6,7 @@ using TesteBackendEnContact.Controllers.Models.ContactBook;
 using TesteBackendEnContact.Core.Domain.ContactBook;
 using TesteBackendEnContact.Core.Interface.ContactBook;
 using TesteBackendEnContact.Repository.Interface;
+using TesteBackendEnContact.Services.Interface;
 
 namespace TesteBackendEnContact.Controllers
 {
@@ -25,9 +26,9 @@ namespace TesteBackendEnContact.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut]
-        public async Task<IContactBook> Put(EditContactBookRequest contactBook, [FromServices] IContactBookRepository contactBookRepository)
+        public async Task<IContactBook> Put(EditContactBookRequest contactBook, [FromServices] IContactBookService contactBookService)
         {
-            return await contactBookRepository.EditAsync(contactBook.ToContactBook());
+            return await contactBookService.EditAsync(contactBook.ToContactBook());
         }
 
         /// <summary>
@@ -35,9 +36,9 @@ namespace TesteBackendEnContact.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IContactBook> Post(SaveContactBookRequest contactBook, [FromServices] IContactBookRepository contactBookRepository)
+        public async Task<IContactBook> Post(SaveContactBookRequest contactBook, [FromServices] IContactBookService contactBookService)
         {
-            return await contactBookRepository.SaveAsync(contactBook.ToContactBook());
+            return await contactBookService.SaveAsync(contactBook.ToContactBook());
         }
 
         /// <summary>
@@ -46,9 +47,9 @@ namespace TesteBackendEnContact.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete]
-        public async Task Delete(int id, [FromServices] IContactBookRepository contactBookRepository)
+        public async Task Delete(int id, [FromServices] IContactBookService contactBookService)
         {
-            await contactBookRepository.DeleteAsync(id);
+            await contactBookService.DeleteAsync(id);
         }
 
         /// <summary>
@@ -56,9 +57,9 @@ namespace TesteBackendEnContact.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IEnumerable<IContactBook>> Get([FromServices] IContactBookRepository contactBookRepository)
+        public async Task<IEnumerable<IContactBook>> Get([FromServices] IContactBookService contactBookService)
         {
-            return await contactBookRepository.GetAllAsync();
+            return await contactBookService.GetAllAsync();
         }
 
         /// <summary>
@@ -67,9 +68,9 @@ namespace TesteBackendEnContact.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<IContactBook> Get(int id, [FromServices] IContactBookRepository contactBookRepository)
+        public async Task<IContactBook> Get(int id, [FromServices] IContactBookService contactBookService)
         {
-            return await contactBookRepository.GetAsync(id);
+            return await contactBookService.GetAsync(id);
         }
     }
 }

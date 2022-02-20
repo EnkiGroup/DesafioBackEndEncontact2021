@@ -1,4 +1,5 @@
 using FluentMigrator.Runner;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -45,10 +46,15 @@ namespace TesteBackendEnContact
                     .AddLogging(lb => lb.AddFluentMigratorConsole());
 
             services.AddSingleton(new DatabaseConfig { ConnectionString = Configuration.GetConnectionString("DefaultConnection") });
+            services.AddScoped<IContactBookService, ContactBookService>();
             services.AddScoped<IContactBookRepository, ContactBookRepository>();
+            services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
-            services.AddScoped<IContactRepository, ContactRepository>();
             services.AddScoped<IContactService, ContactService>();
+            services.AddScoped<IContactRepository, ContactRepository>();
+            services.AddScoped<IDataService, DataService>();
+
+            services.AddControllers().AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContaining<Startup>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

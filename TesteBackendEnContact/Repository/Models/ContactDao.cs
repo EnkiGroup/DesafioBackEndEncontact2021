@@ -16,6 +16,7 @@ namespace TesteBackendEnContact.Repository.Models
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
+        public bool IsCompany { get; set; }
 
         public ContactDao() { }
         
@@ -28,8 +29,9 @@ namespace TesteBackendEnContact.Repository.Models
             Phone = contact.Phone;
             Email = contact.Email;
             Address = contact.Address;
+            IsCompany = contact.IsCompany;
         }
 
-        public IContact Export() => new Contact(Id, ContactBookId, CompanyId, Name, Phone, Email, Address);
+        public IContact Export() => new Contact(Id, ContactBookId, CompanyId, Name, Phone, Email, Address, IsCompany);
     }
 }

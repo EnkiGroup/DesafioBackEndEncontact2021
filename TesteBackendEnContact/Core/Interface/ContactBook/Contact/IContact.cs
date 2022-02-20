@@ -9,5 +9,6 @@
         string Phone { get; }
         string Email { get; }
         string Address { get; }
+        bool IsCompany { get; set; }
     }
 }

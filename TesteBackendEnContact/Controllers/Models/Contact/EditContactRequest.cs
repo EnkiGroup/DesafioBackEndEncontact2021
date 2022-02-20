@@ -11,7 +11,8 @@ namespace TesteBackendEnContact.Controllers.Models.Contact
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
+        public bool IsCompany { get; set; }
 
-        public IContact ToContact() => new Core.Domain.Contact.Contact(Id, ContactBookId, CompanyId, Name, Phone, Email, Address);
+        public IContact ToContact() => new Core.Domain.Contact.Contact(Id, ContactBookId, CompanyId, Name, Phone, Email, Address, IsCompany);
     }
 }

@@ -1,8 +1,8 @@
-﻿using TesteBackendEnContact.Core.Interface.ContactBook.Contact;
+﻿using TesteBackendEnContact.Core.Interface.Data;
 
-namespace TesteBackendEnContact.Core.Domain.Contact
+namespace TesteBackendEnContact.Core.Domain.Data
 {
-    public class ContactModel : IContactModel
+    public class DataModel : IDataModel
     {
         public string Name { get; set; }
         public string Phone { get; set; }
@@ -10,13 +10,15 @@ namespace TesteBackendEnContact.Core.Domain.Contact
         public string Address { get; set; }
         public string NameCompany { get; set; }
 
-        public ContactModel(string nome, string phone, string email, string address, string nameCompany)
+        public DataModel() { }
+
+        public DataModel(string name, string phone, string email, string address, string nameCompany)
         {
-            Name = nome;
+            Name = name;
             Phone = phone;
             Email = email;
             Address = address;
             NameCompany = nameCompany;
         }
-    }
+    }       
 }
