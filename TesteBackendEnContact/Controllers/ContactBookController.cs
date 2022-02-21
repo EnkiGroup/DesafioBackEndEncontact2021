@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TesteBackendEnContact.Controllers.Models.ContactBook;
 using TesteBackendEnContact.Core.Domain.ContactBook;
 using TesteBackendEnContact.Core.Interface.ContactBook;
+using TesteBackendEnContact.Core.Interface.Node;
 using TesteBackendEnContact.Repository.Interface;
 using TesteBackendEnContact.Services.Interface;
 
@@ -24,6 +25,8 @@ namespace TesteBackendEnContact.Controllers
         /// <summary>
         /// Edit 
         /// </summary>
+        /// <param name="contactBook"></param>
+        /// <param name="contactBookService"></param>
         /// <returns></returns>
         [HttpPut]
         public async Task<IContactBook> Put(EditContactBookRequest contactBook, [FromServices] IContactBookService contactBookService)
@@ -32,8 +35,10 @@ namespace TesteBackendEnContact.Controllers
         }
 
         /// <summary>
-        /// Save Contact Book
+        /// Save
         /// </summary>
+        /// <param name="contactBook"></param>
+        /// <param name="contactBookService"></param>
         /// <returns></returns>
         [HttpPost]
         public async Task<IContactBook> Post(SaveContactBookRequest contactBook, [FromServices] IContactBookService contactBookService)
@@ -42,9 +47,10 @@ namespace TesteBackendEnContact.Controllers
         }
 
         /// <summary>
-        /// Delete By Id
+        /// Delete
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="contactBookService"></param>
         /// <returns></returns>
         [HttpDelete]
         public async Task Delete(int id, [FromServices] IContactBookService contactBookService)
@@ -55,17 +61,21 @@ namespace TesteBackendEnContact.Controllers
         /// <summary>
         /// Get All
         /// </summary>
+        /// <param name="currentPage"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="contactBookService"></param>
         /// <returns></returns>
-        [HttpGet]
-        public async Task<IEnumerable<IContactBook>> Get([FromServices] IContactBookService contactBookService)
+        [HttpGet("{currentPage}/{pageSize}")]
+        public async Task<INodeContactBook> Get(int currentPage, int pageSize, [FromServices] IContactBookService contactBookService)
         {
-            return await contactBookService.GetAllAsync();
+            return await contactBookService.GetAllAsync(currentPage, pageSize);
         }
 
         /// <summary>
-        /// Get Contact Book By Id
+        /// Get By Id
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="contactBookService"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<IContactBook> Get(int id, [FromServices] IContactBookService contactBookService)

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TesteBackendEnContact.Controllers.Models.Contact;
 using TesteBackendEnContact.Controllers.Models.File;
 using TesteBackendEnContact.Core.Interface.ContactBook.Contact;
+using TesteBackendEnContact.Core.Interface.Node;
 using TesteBackendEnContact.Repository.Interface;
 using TesteBackendEnContact.Services.Interface;
 
@@ -32,11 +33,18 @@ namespace TesteBackendEnContact.Controllers
             return null;
 
         }
+    
+        [HttpGet("Modelo")]
+        public async Task<ActionResult<string>> GetModeloCSV([FromServices] IDataService contactService)
+        {
+            return Ok(await contactService.ModelCsv());
+        }
+
         /// <summary>
-        /// Edit Contact
+        /// Edit
         /// </summary>
         /// <param name="contact"></param>
-        /// <param name="contactRepository"></param>
+        /// <param name="contactService"></param>
         /// <returns></returns>
         [HttpPut]
         public async Task<ActionResult<IContact>> Put(EditContactRequest contact, [FromServices] IContactService contactService)
@@ -45,7 +53,7 @@ namespace TesteBackendEnContact.Controllers
         }
 
         /// <summary>
-        /// Save Contact
+        /// Save
         /// </summary>
         /// <param name="contact"></param>
         /// <param name="contactService"></param>
@@ -57,10 +65,10 @@ namespace TesteBackendEnContact.Controllers
         }
 
         /// <summary>
-        /// Delete By Id
+        /// Delete
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="contactRepository"></param>
+        /// <param name="contactService"></param>
         /// <returns></returns>
         [HttpDelete]
         public async Task Delete(int id, [FromServices] IContactService contactService)
@@ -71,37 +79,26 @@ namespace TesteBackendEnContact.Controllers
         /// <summary>
         /// Get All
         /// </summary>
-        /// <param name="contactRepository"></param>
+        /// <param name="currentPage"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="contactService"></param>
         /// <returns></returns>
-        [HttpGet]
-        public async Task<IEnumerable<IContact>> Get([FromServices] IContactService contactService)
+        [HttpGet("{currentPage}/{pageSize}")]
+        public async Task<INodeContact> Get(int currentPage, int pageSize, [FromServices] IContactService contactService)
         {
-            return await contactService.GetAllAsync();
+            return await contactService.GetAllAsync(currentPage, pageSize);
         }
 
         /// <summary>
         /// Get By Id
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="companyRepository"></param>
+        /// <param name="contactService"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<IContact> Get(int id, [FromServices] IContactService contactService)
         {
             return await contactService.GetAsync(id);
         }
-
-        /// <summary>
-        /// Get modelo CSV
-        /// </summary>
-        /// <param name="contactService"></param>
-        /// <returns></returns>
-        [HttpGet("Modelo")]
-        public async Task<ActionResult<string>> GetModeloCSV([FromServices] IDataService contactService)
-        {
-            return Ok(await contactService.ModelCsv());
-        }
-
-
     }
 }

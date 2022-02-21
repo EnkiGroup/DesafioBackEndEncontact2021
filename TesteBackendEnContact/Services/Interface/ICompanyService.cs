@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Interface.ContactBook.Company;
+using TesteBackendEnContact.Core.Interface.Node;
 
 namespace TesteBackendEnContact.Services.Interface
 {
@@ -9,7 +10,7 @@ namespace TesteBackendEnContact.Services.Interface
         Task<ICompany> SaveAsync(ICompany company);
         Task<ICompany> EditAsync(ICompany company);
         Task<ICompany> GetAsync(int id);
-        Task<IEnumerable<ICompany>> GetAllAsync();
+        Task<INodeCompany> GetAllAsync(int currentPage, int pageSize);
         Task DeleteAsync(int id);
     }
 }

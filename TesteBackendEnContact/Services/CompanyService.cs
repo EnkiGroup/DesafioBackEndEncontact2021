@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Interface.ContactBook.Company;
+using TesteBackendEnContact.Core.Interface.Node;
 using TesteBackendEnContact.Repository.Interface;
 using TesteBackendEnContact.Services.Interface;
 using TesteBackendEnContact.Services.Models;
+using TesteBackendEnContact.Services.Models.Node;
 
 namespace TesteBackendEnContact.Services
 {
@@ -21,14 +24,19 @@ namespace TesteBackendEnContact.Services
             _contactRepository = contactRepository;
         }
 
-        public async Task<ICompany> GetAsync(int id)
-        {
-            return await _companyRepository.GetAsync(id);
-        }
+        public async Task<ICompany> GetAsync(int id) => await _companyRepository.GetAsync(id);
 
-        public async Task<IEnumerable<ICompany>> GetAllAsync()
+        public async Task<INodeCompany> GetAllAsync(int currentPage, int pageSize)
         {
-            return await _companyRepository.GetAllAsync();
+            var listCompany = await _companyRepository.GetAllAsync();
+
+            var companys = listCompany.OrderBy(x => x.Id).Skip((currentPage - 1) * pageSize).Take(pageSize);
+            var company = new NodeCompany()
+            {
+                Companys = companys,
+                TotalRows=listCompany.Count<ICompany>()
+            };
+            return company;
         }
 
         public async Task<ICompany> SaveAsync(ICompany company)
@@ -87,9 +95,6 @@ namespace TesteBackendEnContact.Services
             return result;
         }
 
-        public async Task DeleteAsync(int id)
-        {
-            await _companyRepository.DeleteAsync(id);
-        }
+        public async Task DeleteAsync(int id) => await _companyRepository.DeleteAsync(id);
     }
 }

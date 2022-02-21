@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Controllers.Models;
 using TesteBackendEnContact.Core.Interface.ContactBook.Company;
+using TesteBackendEnContact.Core.Interface.Node;
 using TesteBackendEnContact.Repository.Interface;
 using TesteBackendEnContact.Services.Interface;
 
@@ -21,16 +22,23 @@ namespace TesteBackendEnContact.Controllers
         }
 
         /// <summary>
-        /// Edit Company 
+        /// Edit 
         /// </summary>
+        /// <param name="company"></param>
+        /// <param name="companyService"></param>
+        /// <returns></returns>
         [HttpPut]
         public async Task<ActionResult<ICompany>> Put(EditCompanyRequest company, [FromServices] ICompanyService companyService)
         {
             return Ok(await companyService.EditAsync(company.ToCompany()));
         }
 
-        /// <summary>Save Company</summary>
-        /// <param name="Name"></param>
+        /// <summary>
+        /// Save 
+        /// </summary>
+        /// <param name="company"></param>
+        /// <param name="companyService"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<ICompany>> Post(SaveCompanyRequest company, [FromServices] ICompanyService  companyService)
         {
@@ -44,18 +52,22 @@ namespace TesteBackendEnContact.Controllers
         }
 
         /// <summary>
-        /// Get All Company 
+        /// Get All 
         /// </summary>
-        [HttpGet]
-        public async Task<IEnumerable<ICompany>> Get([FromServices] ICompanyService companyService)
+        /// <param name="currentPage"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="companyService"></param>
+        /// <returns></returns>
+        [HttpGet("Get/{currentPage}/{pageSize}")]
+        public async Task<INodeCompany> Get(int currentPage, int pageSize,[FromServices] ICompanyService companyService)
         {
-            return await companyService.GetAllAsync();
+            return await companyService.GetAllAsync(currentPage, pageSize);
         }
 
         /// <summary>
-        /// Get Company By Id
+        /// Get By Id
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="id"></param>
         [HttpGet("{id}")]
         public async Task<ICompany> Get(int id, [FromServices] ICompanyService companyService)
         {

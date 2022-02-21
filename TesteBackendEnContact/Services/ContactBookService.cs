@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Interface.ContactBook;
+using TesteBackendEnContact.Core.Interface.Node;
 using TesteBackendEnContact.Repository.Interface;
 using TesteBackendEnContact.Services.Interface;
 using TesteBackendEnContact.Services.Models;
+using TesteBackendEnContact.Services.Models.Node;
 
 namespace TesteBackendEnContact.Services
 {
@@ -21,7 +23,19 @@ namespace TesteBackendEnContact.Services
 
         public async Task<IContactBook> GetAsync(int id) => await _contactBookRepository.GetAsync(id);
 
-        public async Task<IEnumerable<IContactBook>> GetAllAsync() => await _contactBookRepository.GetAllAsync();
+        public async Task<INodeContactBook> GetAllAsync(int currentPage, int pageSize)
+        {
+            var listContactBook = await _contactBookRepository.GetAllAsync();
+            var contactBook = listContactBook.OrderBy(x => x.Id).Skip((currentPage - 1) * pageSize).Take(pageSize);
+
+            var node = new NodeContactBook()
+            {
+                ContactBook = contactBook,
+                TotalRows = listContactBook.Count<IContactBook>(),
+            };
+
+            return node;
+        }
 
         public async Task DeleteAsync(int id) => await _contactBookRepository.DeleteAsync(id);
 

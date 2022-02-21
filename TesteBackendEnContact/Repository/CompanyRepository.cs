@@ -43,25 +43,16 @@ namespace TesteBackendEnContact.Repository
 
         public async Task DeleteAsync(int id)
         {
+            using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
 
-            try
-            {
-                using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
-                connection.Open();
-                using var transaction = connection.BeginTransaction();
+            var sql = new StringBuilder();
+            sql.AppendLine("DELETE FROM Company WHERE Id = @id;");
+            sql.AppendLine("UPDATE Contact SET CompanyId = 0 WHERE CompanyId = @id;");
 
-                var sql = new StringBuilder();
-                sql.AppendLine("DELETE FROM Company WHERE Id = @id;");
-                sql.AppendLine("UPDATE Contact SET CompanyId = 0 WHERE CompanyId = @id;");
-
-                await connection.ExecuteAsync(sql.ToString(), new { id }, transaction);
-                transaction.Commit();
-            }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }
-            
+            await connection.ExecuteAsync(sql.ToString(), new { id }, transaction);
+            transaction.Commit();
         }
 
         public async Task<IEnumerable<ICompany>> GetAllAsync()
