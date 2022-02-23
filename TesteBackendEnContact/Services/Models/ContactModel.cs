@@ -15,15 +15,35 @@ namespace TesteBackendEnContact.Services.Models
 
         public ContactModel() { }
 
-        public ContactModel(IContact company)
+        public ContactModel(IContact contact)
         {
-            Id = company.Id;
-            ContactBookId = company.ContactBookId;
-            Name = company.Name;
-            Phone = company.Phone;
-            Email = company.Email;
-            Address = company.Address;
-            IsCompany = company.IsCompany;
+            Id = contact.Id;
+            ContactBookId = contact.ContactBookId;
+            CompanyId = contact.CompanyId;
+            Name = contact.Name;
+            Phone = contact.Phone;
+            Email = contact.Email;
+            Address = contact.Address;
+            IsCompany = contact.IsCompany;
+        }
+
+        public static implicit operator string(ContactModel contact)
+            => $"{contact.Id};{contact.ContactBookId};{contact.CompanyId};{contact.Name};{contact.Phone};{contact.Email};{contact.Address};{contact.IsCompany}";
+
+        public static implicit operator ContactModel(string line)
+        {
+            var data = line.Split(";");
+            return new ContactModel
+            {
+                Id = int.Parse(data[0]),
+                ContactBookId=int.Parse(data[1]),
+                CompanyId = int.Parse(data[2]),
+                Name = data[3],
+                Phone = data[4],
+                Email = data[5],
+                Address = data[6],
+                IsCompany = bool.Parse(data[7])
+            };
         }
     }
 }

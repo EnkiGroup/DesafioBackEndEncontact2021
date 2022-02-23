@@ -38,12 +38,6 @@ namespace TesteBackendEnContact.Repository
                 await connection.ExecuteScalarAsync(query.ToString(), dao);
                 return dao.Export();
             }
-            //using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
-
-            //var dao = new ContactDao(contact);
-            //await connection.UpdateAsync(dao);
-
-            //return dao.Export();
         }
 
         public async Task<IContact> SaveAsync(IContact contact)
@@ -151,6 +145,68 @@ namespace TesteBackendEnContact.Repository
                 }
                 var result = await conn.QuerySingleOrDefaultAsync<ContactDao>(query.ToString(), new { id, contactBookId, companyId, name, phone, email, address });
                 return result?.Export();
+            }
+        }
+
+        public async Task<IEnumerable<IContact>> SearchContact(int? id, int? contactBookId, int? companyId, string name, string phone, string email, string address, string nameCompany)
+        {
+            var query = new StringBuilder();
+
+            using (var conn = new SqliteConnection(_databaseConfig.ConnectionString))
+            {
+                query.Append(" SELECT ");
+                query.Append(" C.Id ");
+                query.Append(" ,C.ContactBookId ");
+                query.Append(" ,C.CompanyId ");
+                query.Append(" ,C.Name ");
+                query.Append(" ,C.Phone ");
+                query.Append(" ,C.Email ");
+                query.Append(" ,C.Address ");
+                query.Append(" FROM Contact C ");
+                query.Append(" LEFT JOIN Company CP ON CP.Id = C.CompanyId ");
+                query.Append(" WHERE ");
+                if (id > 0)
+                {
+                    query.Append(" C.Id = @id ");
+                }
+
+                if (contactBookId > 0)
+                {
+                    query.Append(" C.ContactBookId = @contactBookId ");
+                }
+
+                if (companyId > 0)
+                {
+                    query.Append(" C.CompanyId = @companyId ");
+                }
+
+                if (name is not null)
+                {
+                    query.Append(" C.Name = @name ");
+                }
+
+                if (phone is not null)
+                {
+                    query.Append(" C.Phone = @phone ");
+                }
+
+                if (email is not null)
+                {
+                    query.Append(" C.Email = @email ");
+                }
+
+                if (address is not null)
+                {
+                    query.Append(" C.Address = @address ");
+                }
+
+                if (nameCompany is not null)
+                {
+                    query.Append(" CP.Name = @nameCompany ");
+                }
+
+                var result = await conn.QueryAsync<ContactDao>(query.ToString(), new { id, contactBookId, companyId, name, phone, email, address, nameCompany });
+                return result?.Select(item => item.Export());
             }
         }
     }

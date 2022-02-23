@@ -26,11 +26,11 @@ namespace TesteBackendEnContact.Services
 
         public async Task<ICompany> GetAsync(int id) => await _companyRepository.GetAsync(id);
 
-        public async Task<INodeCompany> GetAllAsync(int currentPage, int pageSize)
+        public async Task<INodeCompany> GetAllAsync()
         {
             var listCompany = await _companyRepository.GetAllAsync();
 
-            var companys = listCompany.OrderBy(x => x.Id).Skip((currentPage - 1) * pageSize).Take(pageSize);
+            var companys = listCompany.OrderBy(x => x.Id);
             var company = new NodeCompany()
             {
                 Companys = companys,

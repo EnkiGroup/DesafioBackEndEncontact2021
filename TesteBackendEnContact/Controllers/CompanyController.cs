@@ -54,14 +54,12 @@ namespace TesteBackendEnContact.Controllers
         /// <summary>
         /// Get All 
         /// </summary>
-        /// <param name="currentPage"></param>
-        /// <param name="pageSize"></param>
         /// <param name="companyService"></param>
         /// <returns></returns>
-        [HttpGet("Get/{currentPage}/{pageSize}")]
-        public async Task<INodeCompany> Get(int currentPage, int pageSize,[FromServices] ICompanyService companyService)
+        [HttpGet]
+        public async Task<INodeCompany> Get([FromServices] ICompanyService companyService)
         {
-            return await companyService.GetAllAsync(currentPage, pageSize);
+            return await companyService.GetAllAsync();
         }
 
         /// <summary>

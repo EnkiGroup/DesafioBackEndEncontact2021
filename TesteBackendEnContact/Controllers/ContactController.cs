@@ -23,21 +23,32 @@ namespace TesteBackendEnContact.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Update File
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="contactService"></param>
+        /// <returns></returns>
         [HttpPost("UpdateArquivoContact")]
-        public async Task<IActionResult> UpdateArquivo([FromForm] UploadFile file,[FromServices] IDataService contactService)
+        public async Task<IActionResult> UpdateFile([FromForm] UploadFile file, [FromServices] IContactService contactService)
         {
             if (file.File.Length > 0)
-                await contactService.UploadFileContact(file);
+                await contactService.SaveContactFileAsync(file);
             else
-                throw new Exception("");
-            return null;
+                return BadRequest("File is null!");
 
+            return Ok();
         }
-    
-        [HttpGet("Modelo")]
-        public async Task<ActionResult<string>> GetModeloCSV([FromServices] IDataService contactService)
+
+        /// <summary>
+        /// Generate File CSV 
+        /// </summary>
+        /// <param name="contactService"></param>
+        /// <returns></returns>
+        [HttpGet("GenerateFile")]
+        public async Task<ActionResult<string>> GenerateFile([FromServices] IContactService contactService)
         {
-            return Ok(await contactService.ModelCsv());
+            return Ok(await contactService.GenerateFileCSV());
         }
 
         /// <summary>
@@ -79,14 +90,12 @@ namespace TesteBackendEnContact.Controllers
         /// <summary>
         /// Get All
         /// </summary>
-        /// <param name="currentPage"></param>
-        /// <param name="pageSize"></param>
         /// <param name="contactService"></param>
         /// <returns></returns>
-        [HttpGet("{currentPage}/{pageSize}")]
-        public async Task<INodeContact> Get(int currentPage, int pageSize, [FromServices] IContactService contactService)
+        [HttpGet]
+        public async Task<INodeContact> Get([FromServices] IContactService contactService)
         {
-            return await contactService.GetAllAsync(currentPage, pageSize);
+            return await contactService.GetAllAsync();
         }
 
         /// <summary>
@@ -99,6 +108,27 @@ namespace TesteBackendEnContact.Controllers
         public async Task<IContact> Get(int id, [FromServices] IContactService contactService)
         {
             return await contactService.GetAsync(id);
+        }
+
+        /// <summary>
+        /// Search Contact
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="contactBookId"></param>
+        /// <param name="companyId"></param>
+        /// <param name="name"></param>
+        /// <param name="phone"></param>
+        /// <param name="email"></param>
+        /// <param name="address"></param>
+        /// <param name="nameCompany"></param>
+        /// <param name="currentPage"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="contactService"></param>
+        /// <returns></returns>
+        [HttpGet("{currentPage}/{pageSize}")]
+        public async Task<INodeContact> SearchContact(int? id, int? contactBookId, int? companyId, string name, string phone, string email, string address, string nameCompany, int currentPage, int pageSize, [FromServices] IContactService contactService)
+        {
+            return await contactService.SearchContact(id.GetValueOrDefault(), contactBookId.GetValueOrDefault(), companyId.GetValueOrDefault(), name, phone, email, address, nameCompany, currentPage, pageSize);
         }
     }
 }

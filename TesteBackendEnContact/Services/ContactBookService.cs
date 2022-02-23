@@ -23,10 +23,10 @@ namespace TesteBackendEnContact.Services
 
         public async Task<IContactBook> GetAsync(int id) => await _contactBookRepository.GetAsync(id);
 
-        public async Task<INodeContactBook> GetAllAsync(int currentPage, int pageSize)
+        public async Task<INodeContactBook> GetAllAsync()
         {
             var listContactBook = await _contactBookRepository.GetAllAsync();
-            var contactBook = listContactBook.OrderBy(x => x.Id).Skip((currentPage - 1) * pageSize).Take(pageSize);
+            var contactBook = listContactBook.OrderBy(x => x.Id);
 
             var node = new NodeContactBook()
             {

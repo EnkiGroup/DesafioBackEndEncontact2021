@@ -1,6 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Hosting;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using TesteBackendEnContact.Controllers.Models.File;
 using TesteBackendEnContact.Core.Interface.ContactBook.Contact;
 using TesteBackendEnContact.Core.Interface.Node;
 using TesteBackendEnContact.Repository.Interface;
@@ -15,11 +20,13 @@ namespace TesteBackendEnContact.Services
         private readonly IContactRepository _contactRepository;
         private readonly ICompanyRepository _companyRepository;
         private readonly IContactBookRepository _contactBookRepository;
-        public ContactService(IContactRepository contactRepository, ICompanyRepository companyRepository, IContactBookRepository contactBookRepository)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public ContactService(IContactRepository contactRepository, ICompanyRepository companyRepository, IContactBookRepository contactBookRepository, IWebHostEnvironment webHostEnvironment)
         {
             _contactRepository = contactRepository;
             _companyRepository = companyRepository;
             _contactBookRepository = contactBookRepository;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<IContact> GetAsync(int id)
@@ -27,10 +34,10 @@ namespace TesteBackendEnContact.Services
             return await _contactRepository.GetAsync(id);
         }
 
-        public async Task<INodeContact> GetAllAsync(int currentPage, int pageSize)
+        public async Task<INodeContact> GetAllAsync()
         {
             var listContacts = await _contactRepository.GetAllAsync();
-            var contacts = listContacts.OrderBy(x => x.Id).Skip((currentPage - 1) * pageSize).Take(pageSize);
+            var contacts = listContacts.OrderBy(x => x.Id);
 
             var nodeContact = new NodeContact()
             {
@@ -109,6 +116,108 @@ namespace TesteBackendEnContact.Services
         public async Task DeleteAsync(int id)
         {
             await _contactRepository.DeleteAsync(id);
+        }
+
+        public async Task<INodeContact> SearchContact(int? id, int? contactBookId, int? companyId, string name, string phone, string email, string address, string companyName, int currentPage, int pageSize)
+        {
+            var listContact = await _contactRepository.SearchContact(id.GetValueOrDefault(), contactBookId.GetValueOrDefault(), companyId.GetValueOrDefault(), name, phone, email, address, companyName);
+            var contacts = listContact.OrderBy(x => x.Id).Skip((currentPage - 1) * pageSize).Take(pageSize);
+
+            var nodeContact = new NodeContact()
+            {
+                Contacts = contacts,
+                TotalRows = contacts.Count<IContact>()
+            };
+            return nodeContact;
+        }
+
+        public async Task SaveContactFileAsync(UploadFile file)
+        {
+            var path = await ReadeFileAsync(file);
+            var data = File.ReadLines(path);
+            foreach (var line in data)
+            {
+                ContactModel contact = line;
+                _ = await SaveAsync(contact);
+            }
+        }
+
+        private async Task<string> ReadeFileAsync(UploadFile file)
+        {
+            if (file.File.Length > 0)
+            {
+                try
+                {
+                    if (!Directory.Exists(_webHostEnvironment.WebRootPath + "\\File\\"))
+                    {
+                        Directory.CreateDirectory(_webHostEnvironment.WebRootPath + "\\File\\");
+                    }
+                    using (FileStream fileStream = File.Create(_webHostEnvironment.WebRootPath + "\\File\\" + file.File.FileName))
+                    {
+                        file.File.CopyTo(fileStream);
+                        fileStream.Flush();
+                    }
+                }
+                catch (System.Exception)
+                {
+                    throw;
+                }
+            }
+            return _webHostEnvironment.WebRootPath + "\\File\\" + file.File.FileName;
+        }
+
+        public async Task<string> GenerateFileCSV()
+        {
+            var fileName = @"\Modelo.csv";
+            var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var listContact = new List<ContactModel>();
+
+            var contactAll = await GetAllAsync();
+
+            var modelCsv = new FileStream(path + fileName, FileMode.Create, FileAccess.ReadWrite);
+            using (var Csv = new StreamWriter(modelCsv, encoding: System.Text.Encoding.UTF8))
+            {
+                #region .: Modelo CSV :.
+                Csv.WriteLine("Id;ContactBookId;CompanyId;Name;Phone;Email;Address");
+                #endregion
+                foreach (var contactItem in contactAll.Contacts)
+                {
+                    listContact.Add(new ContactModel(contactItem));
+                }
+
+                listContact.ForEach(x =>
+                {
+                    var str = new StringBuilder();
+                    str.AppendLine(String.Join(";", new string[]
+                    {
+                        x.Id.ToString(),
+                        x.ContactBookId.ToString(),
+                        x.CompanyId.ToString(),
+                        x.Name,
+                        x.Phone,
+                        x.Email,
+                        x.Address
+                    }));
+                    Csv.Write(str);
+                });
+            }
+            return $"File created in: {path}";
+        }
+
+        public async Task<string> ModelCsv()
+        {
+            var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var fileName = @"\Modelo.csv";
+            var modelCsv = new FileStream(path + fileName, FileMode.Create, FileAccess.ReadWrite);
+
+            using (var Csv = new StreamWriter(modelCsv, encoding: System.Text.Encoding.UTF8))
+            {
+                #region .: Modelo CSV :.
+                Csv.WriteLine("Name;Phone;Email;Address;NameCompany;IsCompany");
+                #endregion
+            }
+
+            return path + fileName;
         }
     }
 }

@@ -12,6 +12,6 @@ namespace TesteBackendEnContact.Services.Interface
         Task DeleteAsync(int id);
         Task<IContactBook> SaveAsync(IContactBook contactBook);
         Task<IContactBook> EditAsync(IContactBook contactBook);
-        Task<INodeContactBook> GetAllAsync(int currentPage, int pageSize);
+        Task<INodeContactBook> GetAllAsync();
     }
 }

@@ -61,14 +61,13 @@ namespace TesteBackendEnContact.Controllers
         /// <summary>
         /// Get All
         /// </summary>
-        /// <param name="currentPage"></param>
-        /// <param name="pageSize"></param>
         /// <param name="contactBookService"></param>
         /// <returns></returns>
-        [HttpGet("{currentPage}/{pageSize}")]
-        public async Task<INodeContactBook> Get(int currentPage, int pageSize, [FromServices] IContactBookService contactBookService)
+
+        [HttpGet]
+        public async Task<INodeContactBook> Get([FromServices] IContactBookService contactBookService)
         {
-            return await contactBookService.GetAllAsync(currentPage, pageSize);
+            return await contactBookService.GetAllAsync();
         }
 
         /// <summary>

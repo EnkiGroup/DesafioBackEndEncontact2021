@@ -10,7 +10,7 @@ namespace TesteBackendEnContact.Services.Interface
         Task<ICompany> SaveAsync(ICompany company);
         Task<ICompany> EditAsync(ICompany company);
         Task<ICompany> GetAsync(int id);
-        Task<INodeCompany> GetAllAsync(int currentPage, int pageSize);
+        Task<INodeCompany> GetAllAsync();
         Task DeleteAsync(int id);
     }
 }
