@@ -14,7 +14,8 @@ namespace TesteBackendEnContact.Services.Interface
         Task<IContact> EditAsync(IContact contact);
         Task DeleteAsync(int id);
         Task<INodeContact> SearchContact(int? id, int? contactBookId, int? companyId, string name, string phone, string email, string address, string companyName, int currentPage, int pageSize);
-        Task SaveContactFileAsync(UploadFile file);
+        Task<List<string>> SaveContactFileAsync(UploadFile file);
         Task<string> GenerateFileCSV();
+        Task<string> ModelCsv();
     }
 }

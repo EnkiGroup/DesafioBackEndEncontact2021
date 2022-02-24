@@ -13,5 +13,6 @@ namespace TesteBackendEnContact.Repository.Interface
         Task<ICompany> GetAsync(int id);
         Task<ICompany> GetCompanyByNameAsync(string name);
         Task<ICompany> GetCompanyByContactBookId(int contactBookId);
+        Task<bool> ExistCompany(int id);
     }
 }

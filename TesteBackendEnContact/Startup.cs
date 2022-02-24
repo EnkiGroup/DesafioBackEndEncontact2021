@@ -52,7 +52,6 @@ namespace TesteBackendEnContact
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<IContactService, ContactService>();
             services.AddScoped<IContactRepository, ContactRepository>();
-            services.AddScoped<IDataService, DataService>();
 
             services.AddControllers().AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContaining<Startup>());
         }

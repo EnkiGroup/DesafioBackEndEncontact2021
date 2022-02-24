@@ -35,14 +35,14 @@ namespace TesteBackendEnContact.Services.Models
             var data = line.Split(";");
             return new ContactModel
             {
-                Id = int.Parse(data[0]),
-                ContactBookId=int.Parse(data[1]),
-                CompanyId = int.Parse(data[2]),
-                Name = data[3],
-                Phone = data[4],
-                Email = data[5],
-                Address = data[6],
-                IsCompany = bool.Parse(data[7])
+                //Id = int.Parse(data[0]),
+                //ContactBookId=int.Parse(data[1]),
+                CompanyId = int.Parse(data[0]),
+                Name = data[1],
+                Phone = data[2],
+                Email = data[3],
+                Address = data[4],
+                IsCompany = bool.Parse(data[5])
             };
         }
     }

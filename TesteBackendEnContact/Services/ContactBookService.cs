@@ -37,7 +37,22 @@ namespace TesteBackendEnContact.Services
             return node;
         }
 
-        public async Task DeleteAsync(int id) => await _contactBookRepository.DeleteAsync(id);
+        public async Task DeleteAsync(int id)
+        {
+            var contactBook = await _contactBookRepository.GetAsync(id);
+            if (contactBook is not null)
+            {
+                var contact = await _contactRepository.GetContact(name: contactBook.Name);
+                var company = await _companyRepository.GetAsync(contact.CompanyId);
+                if (company is not null)
+                {
+                    if (contactBook.Id == company.ContactBookId)
+                        await _companyRepository.DeleteAsync(company.Id);
+                }
+                await _contactRepository.DeleteAsync(contact.Id);
+            }
+            await _contactBookRepository.DeleteAsync(id);
+        }
 
         public async Task<IContactBook> SaveAsync(IContactBook contactBook) => await _contactBookRepository.SaveAsync(contactBook);
 

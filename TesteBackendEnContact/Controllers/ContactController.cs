@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -21,34 +22,6 @@ namespace TesteBackendEnContact.Controllers
         public ContactController(ILogger<ContactController> logger)
         {
             _logger = logger;
-        }
-
-        /// <summary>
-        /// Update File
-        /// </summary>
-        /// <param name="file"></param>
-        /// <param name="contactService"></param>
-        /// <returns></returns>
-        [HttpPost("UpdateArquivoContact")]
-        public async Task<IActionResult> UpdateFile([FromForm] UploadFile file, [FromServices] IContactService contactService)
-        {
-            if (file.File.Length > 0)
-                await contactService.SaveContactFileAsync(file);
-            else
-                return BadRequest("File is null!");
-
-            return Ok();
-        }
-
-        /// <summary>
-        /// Generate File CSV 
-        /// </summary>
-        /// <param name="contactService"></param>
-        /// <returns></returns>
-        [HttpGet("GenerateFile")]
-        public async Task<ActionResult<string>> GenerateFile([FromServices] IContactService contactService)
-        {
-            return Ok(await contactService.GenerateFileCSV());
         }
 
         /// <summary>
@@ -129,6 +102,49 @@ namespace TesteBackendEnContact.Controllers
         public async Task<INodeContact> SearchContact(int? id, int? contactBookId, int? companyId, string name, string phone, string email, string address, string nameCompany, int currentPage, int pageSize, [FromServices] IContactService contactService)
         {
             return await contactService.SearchContact(id.GetValueOrDefault(), contactBookId.GetValueOrDefault(), companyId.GetValueOrDefault(), name, phone, email, address, nameCompany, currentPage, pageSize);
+        }
+
+        /// <summary>
+        /// Update File
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="contactService"></param>
+        /// <returns></returns>
+        [HttpPost("UpdateArquivoContact")]
+        [ProducesResponseType(typeof(List<string>), 200)]
+        [ProducesResponseType(typeof(object), 400)]
+        public async Task<IActionResult> UpdateFile([FromForm] UploadFile file, [FromServices] IContactService contactService)
+        {
+            var result = new List<string>();
+
+            if (file.File.Length > 0)
+                result = await contactService.SaveContactFileAsync(file);
+            else
+                return BadRequest("File is null!");
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+
+        /// <summary>
+        /// Generate File CSV 
+        /// </summary>
+        /// <param name="contactService"></param>
+        /// <returns></returns>
+        [HttpGet("GenerateFile")]
+        public async Task<ActionResult<string>> GenerateFile([FromServices] IContactService contactService)
+        {
+            return Ok(await contactService.GenerateFileCSV());
+        }
+
+        /// <summary>
+        /// Get Model CSV
+        /// </summary>
+        /// <param name="contactService"></param>
+        /// <returns></returns>
+        [HttpGet("GetModelCSV")]
+        public async Task<ActionResult<string>> GetModelCSV([FromServices] IContactService contactService)
+        {
+            return Ok(await contactService.ModelCsv());
         }
     }
 }

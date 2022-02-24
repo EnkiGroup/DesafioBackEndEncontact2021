@@ -50,37 +50,43 @@ namespace TesteBackendEnContact.Services
         public async Task<IContact> SaveAsync(IContact contact)
         {
             var companyId = 0;
+            var contactModel = new ContactModel();
 
             if (contact.CompanyId > 0)
                 companyId = contact.CompanyId;
 
-            var contactBookModel = new ContactBookModel()
+            if ((contact.CompanyId > 0) && !await _companyRepository.ExistCompany(companyId) && contact.IsCompany == false)
             {
-                Name = contact.Name,
-            };
-            var contactBook = await _contactBookRepository.SaveAsync(contactBookModel);
-
-
-            if (contact.IsCompany)
+                throw new Exception("Not Found");
+            }
+            else
             {
-                var companyModel = new CompanyModel()
+                var contactBookModel = new ContactBookModel()
                 {
-                    ContactBookId = contactBook.Id,
                     Name = contact.Name,
                 };
-                var company = await _companyRepository.SaveAsync(companyModel);
-                companyId = company.Id;
-            }
+                var contactBook = await _contactBookRepository.SaveAsync(contactBookModel);
 
-            var contactModel = new ContactModel()
-            {
-                ContactBookId = contactBook.Id,
-                CompanyId = companyId,
-                Name = contact.Name,
-                Phone = contact.Phone,
-                Email = contact.Email,
-                Address = contact.Address,
-            };
+                if (contact.IsCompany)
+                {
+                    var companyModel = new CompanyModel()
+                    {
+                        ContactBookId = contactBook.Id,
+                        Name = contact.Name,
+                    };
+                    var company = await _companyRepository.SaveAsync(companyModel);
+                    companyId = company.Id;
+                }
+
+                #region .: Contact Model .:
+                contactModel.ContactBookId = contactBook.Id;
+                contactModel.CompanyId = companyId;
+                contactModel.Name = contact.Name;
+                contactModel.Phone = contact.Phone;
+                contactModel.Email = contact.Email;
+                contactModel.Address = contact.Address;
+                #endregion
+            }
             return await _contactRepository.SaveAsync(contactModel);
         }
 
@@ -115,7 +121,21 @@ namespace TesteBackendEnContact.Services
 
         public async Task DeleteAsync(int id)
         {
-            await _contactRepository.DeleteAsync(id);
+            var contact = await _contactRepository.GetAsync(id);
+
+            if (contact.CompanyId > 0)
+            {
+                var company = await _companyRepository.GetAsync(contact.CompanyId);
+                if (company.Id == contact.CompanyId && company.Name.Equals(contact.Name))
+                    await _companyRepository.DeleteAsync(company.Id);
+            }
+            if (contact.Id > 0)
+            {
+                await _contactBookRepository.DeleteAsync(contact.ContactBookId);
+                await _contactRepository.DeleteAsync(id);
+            }
+            else
+                throw new Exception("Not found");
         }
 
         public async Task<INodeContact> SearchContact(int? id, int? contactBookId, int? companyId, string name, string phone, string email, string address, string companyName, int currentPage, int pageSize)
@@ -131,15 +151,29 @@ namespace TesteBackendEnContact.Services
             return nodeContact;
         }
 
-        public async Task SaveContactFileAsync(UploadFile file)
+        public async Task<List<string>> SaveContactFileAsync(UploadFile file)
         {
+            var contactInsertResult = new List<string>();
+            var messagem = string.Empty;
+
             var path = await ReadeFileAsync(file);
             var data = File.ReadLines(path);
             foreach (var line in data)
             {
                 ContactModel contact = line;
-                _ = await SaveAsync(contact);
+                try
+                {
+                    var resultSave = await SaveAsync(contact);
+                    if (resultSave is not null)
+                        messagem = $"Saved as success: {line}";
+                }
+                catch
+                {
+                    messagem = $"Error insert contact: {line}";
+                }
+                contactInsertResult.Add(messagem);
             }
+            return contactInsertResult;
         }
 
         private async Task<string> ReadeFileAsync(UploadFile file)
@@ -213,7 +247,7 @@ namespace TesteBackendEnContact.Services
             using (var Csv = new StreamWriter(modelCsv, encoding: System.Text.Encoding.UTF8))
             {
                 #region .: Modelo CSV :.
-                Csv.WriteLine("Name;Phone;Email;Address;NameCompany;IsCompany");
+                Csv.WriteLine("CompanyId;Name;Phone;Email;Address;IsCompany");
                 #endregion
             }
 

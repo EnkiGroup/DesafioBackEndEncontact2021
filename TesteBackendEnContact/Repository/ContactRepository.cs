@@ -166,44 +166,21 @@ namespace TesteBackendEnContact.Repository
                 query.Append(" LEFT JOIN Company CP ON CP.Id = C.CompanyId ");
                 query.Append(" WHERE ");
                 if (id > 0)
-                {
                     query.Append(" C.Id = @id ");
-                }
-
                 if (contactBookId > 0)
-                {
                     query.Append(" C.ContactBookId = @contactBookId ");
-                }
-
                 if (companyId > 0)
-                {
                     query.Append(" C.CompanyId = @companyId ");
-                }
-
                 if (name is not null)
-                {
                     query.Append(" C.Name = @name ");
-                }
-
                 if (phone is not null)
-                {
                     query.Append(" C.Phone = @phone ");
-                }
-
                 if (email is not null)
-                {
                     query.Append(" C.Email = @email ");
-                }
-
                 if (address is not null)
-                {
                     query.Append(" C.Address = @address ");
-                }
-
                 if (nameCompany is not null)
-                {
                     query.Append(" CP.Name = @nameCompany ");
-                }
 
                 var result = await conn.QueryAsync<ContactDao>(query.ToString(), new { id, contactBookId, companyId, name, phone, email, address, nameCompany });
                 return result?.Select(item => item.Export());

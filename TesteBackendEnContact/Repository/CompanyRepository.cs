@@ -95,5 +95,16 @@ namespace TesteBackendEnContact.Repository
                 return result?.Export();
             }
         }
+
+        public async Task<bool> ExistCompany(int id)
+        {
+            var validator = false;
+
+            using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+            var query = @" SELECT * FROM Company WHERE Id = @id ";
+            var result = await connection.QuerySingleOrDefaultAsync<CompanyDao>(query, new { id });
+
+            return validator = result is not null ? true : false;
+        }
     }
 }

@@ -47,8 +47,6 @@ namespace TesteBackendEnContact.Repository
         public async Task DeleteAsync(int id)
         {
             using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
-            //connection.Open();
-            //using var transaction = connection.BeginTransaction();
             // TODO
             var sql = " DELETE FROM ContactBook WHERE Id = @id ";
 
